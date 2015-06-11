@@ -1,10 +1,10 @@
-Akka Micro Dag Prototype
+Akka Micro DAG Prototype
 =========================
 
 Define and run the simplest possible Akka executor directed acyclic graph
  
  As input the DAG takes a graph adjacency list and a payload for each executor:
- 
+
  Node ID  | List of Precursors | Payload command
 ------------- | ------------- | ------------
 a  | (none - we start here)  | println(a)
@@ -26,5 +26,3 @@ The input configuration is a JSON data structure that reflects the above relatio
 ```
 
 ![The simple dag](dag.dot.png)
-
-
