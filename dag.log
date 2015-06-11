@@ -1,0 +1,25 @@
+06/11 10:03:28 INFO [lt-dispatcher-3] akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+06/11 10:03:28 DEBUG[lt-dispatcher-3] akka.event.EventStream - logger log1-Slf4jLogger started
+06/11 10:03:28 DEBUG[lt-dispatcher-3] akka.event.EventStream - Default Loggers started
+06/11 10:04:40 INFO [lt-dispatcher-2] akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+06/11 10:04:40 DEBUG[lt-dispatcher-2] akka.event.EventStream - logger log1-Slf4jLogger started
+06/11 10:04:40 DEBUG[lt-dispatcher-2] akka.event.EventStream - Default Loggers started
+06/11 10:07:23 INFO [lt-dispatcher-4] akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+06/11 10:07:23 DEBUG[lt-dispatcher-4] akka.event.EventStream - logger log1-Slf4jLogger started
+06/11 10:07:23 DEBUG[lt-dispatcher-4] akka.event.EventStream - Default Loggers started
+06/11 10:12:00 INFO [lt-dispatcher-4] akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+06/11 10:12:00 DEBUG[lt-dispatcher-4] akka.event.EventStream - logger log1-Slf4jLogger started
+06/11 10:12:00 DEBUG[lt-dispatcher-4] akka.event.EventStream - Default Loggers started
+06/11 10:15:03 INFO [lt-dispatcher-2] akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+06/11 10:15:03 DEBUG[lt-dispatcher-2] akka.event.EventStream - logger log1-Slf4jLogger started
+06/11 10:15:03 DEBUG[lt-dispatcher-2] akka.event.EventStream - Default Loggers started
+06/11 10:17:12 INFO [lt-dispatcher-4] akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+06/11 10:17:12 DEBUG[lt-dispatcher-4] akka.event.EventStream - logger log1-Slf4jLogger started
+06/11 10:17:12 DEBUG[lt-dispatcher-4] akka.event.EventStream - Default Loggers started
+06/11 10:19:26 INFO [lt-dispatcher-4] akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+06/11 10:19:26 DEBUG[lt-dispatcher-4] akka.event.EventStream - logger log1-Slf4jLogger started
+06/11 10:19:26 DEBUG[lt-dispatcher-4] akka.event.EventStream - Default Loggers started
+06/11 10:23:44 INFO [lt-dispatcher-2] akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+06/11 10:23:44 DEBUG[lt-dispatcher-2] akka.event.EventStream - logger log1-Slf4jLogger started
+06/11 10:23:44 DEBUG[lt-dispatcher-2] akka.event.EventStream - Default Loggers started
+06/11 10:23:44 INFO [lt-dispatcher-6] akka.actor.RepointableActorRef - Message [com.example.Kick] from Actor[akka://DagActorSystem/user/d_executor#1377387849] to Actor[akka://DagActorSystem/user/e_executor#-1951129108] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
