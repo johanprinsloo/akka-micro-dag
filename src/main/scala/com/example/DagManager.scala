@@ -55,8 +55,17 @@ case class DagManager(input : List[DagSpec], sys : Option[ActorSystem] = None) {
 
   var completes = List[String]()
   do {
-    completes = Await.result( ask(monitor, DagCompletesQuery).mapTo[List[String]], 5 seconds ) //.mapTo[List[String]]
+    val new_completes = Await.result( ask(monitor, DagCompletesQuery).mapTo[List[String]], 5 seconds ) //.mapTo[List[String]]
+    if(new_completes.size > completes.size){
+      println(s"${new_completes.diff(completes).head} reported complete - now total complete $new_completes")
+      completes = new_completes
+    }
   } while (completes.size != input.size)
+
+  println("run completed")
+  monitor ! PoisonPill
+
+  system.shutdown()
 
   sys.getOrElse({
     system.awaitTermination()
@@ -90,11 +99,12 @@ class DagNode(id:String, pre : List[String] ,payload : String, monitor : ActorRe
   def active : Receive = LoggingReceive {
     case Kick(from) => {
       kicks = from :: kicks
-      println(s"${self.path.name} kicked from $from - total kicks: \n\t${kicks} out of $pre")
+      println(s"${self.path.name} kicked from $from - total kicks: \n\t${kicks} out of $pre " +
+        s"so waiting for ${pre.diff(kicks)} kicks")
       if(pre.isEmpty) {  // this is a starter node
         runTask
       } else {
-        kicks.diff(pre).size match {
+        pre.diff(kicks).size match {
           case 0 => {
             runTask
           }

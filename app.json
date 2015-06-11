@@ -1,0 +1,6 @@
+{
+  "name": "Akka DAG prototype",
+  "description": "Akka execution framework for easy to configure Directed Acyclic Graphs",
+  "website": "https://github.com/modelergy/akka-micro-dag",
+  "success_url": "/ip/8.8.8.8"
+}

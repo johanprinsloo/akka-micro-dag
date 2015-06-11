@@ -10,3 +10,6 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.0.13",
   "com.typesafe.akka" %% "akka-testkit" % "2.3.11" % "test",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test")
+
+
+fork in run := true
