@@ -10,7 +10,7 @@ import akka.pattern.ask
 import scala.concurrent.duration._
 import akka.event.LoggingReceive
 
-case class DagSpec(id : String, precursors : List[String], payload : String)
+case class DagSpec(id : String, precursors : List[String], payload : String, delay : Long = 0L, failure : Boolean = false)
 
 case class DagManager(input : List[DagSpec], sys : Option[ActorSystem] = None) {
 

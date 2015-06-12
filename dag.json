@@ -1,7 +1,7 @@
 [
-{ "name" : "a", "precursors" : [], "payload" : {"cmd":"println(\"a\")"} },
-{ "name" : "b", "precursors" : ["a"], "payload" : {"cmd":"println(\"b\")"} },
-{ "name" : "c", "precursors" : ["a"], "payload" : {"cmd":"println(\"c\")"} },
-{ "name" : "d", "precursors" : ["b","c"], "payload" : {"cmd":"println(\"d\")"} },
-{ "name" : "e", "precursors" : ["d"], "payload" : {"cmd":"println(\"e\")"} }
+{ "id" : "a", "precursors" : [], "payload" : "exe a" },
+{ "id" : "b", "precursors" : ["a"], "payload" : "exe b" },
+{ "id" : "c", "precursors" : ["a"], "payload" : "exe c" },
+{ "id" : "d", "precursors" : ["b","c"], "payload" : "exe d" },
+{ "id" : "e", "precursors" : ["d","a"], "payload" : "exe e" }
 ]
