@@ -26,7 +26,6 @@ case class DagManager(input : List[DagSpec], sys : Option[ActorSystem] = None) {
   val monitor = system.actorOf(Props[DagStatus],"monitor")
   println("monitor..")
 
-
   val dagDeps = input.map( node => node.precursors -> node.id )
 
   val dagRealized = input.map( node => {
@@ -59,8 +58,6 @@ case class DagManager(input : List[DagSpec], sys : Option[ActorSystem] = None) {
       node ! Kick("$starter")
     }
   }}
-
-
 
   var completes = List[String]()
 
@@ -149,7 +146,7 @@ class DagNode(id:String, pre : List[String] ,payload : String, monitor : ActorRe
 
   /* We only need to schedule this to simulate a delay - normally we would just do the work
    */
-  def scheduleTask() = system.scheduler.scheduleOnce((delay+1) milliseconds) {
+  def scheduleTask() = system.scheduler.scheduleOnce(delay milliseconds) {
     if(fail) {
       println(s"Simulated failure at ${self.path.name}")
       self ! Failure(new Exception("Born to fail"))

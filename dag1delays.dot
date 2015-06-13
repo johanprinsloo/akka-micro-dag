@@ -1,0 +1,22 @@
+digraph Dag {
+   graph [fontsize=16 fontname=SEOptimist labelfontname=SEOptimist labelloc="t" splines=true overlap=false ];
+   node [fontsize=16  fontname=SEOptimist labelfontname=SEOptimist shape=Mrecord penwidth=2.0 style=filled fillcolor=lightgrey];
+   edge [fontsize=12  fontname=SEOptimist labelfontname=SEOptimist penwidth=2.0 ];
+
+   ratio = auto;
+   bgcolor="transparent";
+
+   a -> b;
+   a -> c;
+   c -> c [color=red fontsize=12 fontname=SEOptimistLight label="1000ms \n delay"];
+   b -> d;
+   c -> d;
+   d -> e;
+   f -> g;
+   g -> g [color=red fontsize=12 fontname=SEOptimistLight label="50ms \n delay"];
+   g -> e;
+   h -> h [color=red fontsize=12 fontname=SEOptimistLight label="5000ms \n delay"];
+   h -> i;
+   i -> j;
+   i -> k;
+ }

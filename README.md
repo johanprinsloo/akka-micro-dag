@@ -84,3 +84,82 @@ background log: info: run completed
 >
 ```
 
+##With task delays simulated
+We introduce simulated delays for each node. The input specification changes to:
+
+```json
+[
+  {"id": "a","precursors": [],"payload": "exe a"},
+  {"id": "b","precursors": ["a"],"payload": "exe b"},
+  {"id": "c","precursors": ["a"],"payload": "exe c","delay":1000},
+  {"id": "d","precursors": ["b","c"],"payload": "exe d"},
+  {"id": "e","precursors": ["d","g"],"payload": "exe e"},
+  {"id": "f","precursors": [],"payload": "exe f"},
+  {"id": "g","precursors": ["f"],"payload": "exe g","delay":50},
+  {"id": "h","precursors": [],"payload": "exe h"},
+  {"id": "i","precursors": ["h"],"payload": "exe i","delay":5000},
+  {"id": "j","precursors": ["i"],"payload": "exe j"},
+  {"id": "k","precursors": ["i"],"payload": "exe k"}
+]
+```
+Node c,g and i will take the specified time to complete their tasks (after being kicked off by their precursors):
+
+![The interesting dag](dag1delays.dot.png)
+
+The execution order changes to:
+
+```bash
+λ sbt
+> run dag1delays.json
+background log: info: exe f
+background log: info: exe h
+background log: info: exe a
+background log: info: exe b
+background log: info: exe g
+background log: info: exe c
+background log: info: exe d
+background log: info: exe e
+background log: info: exe i
+background log: info: exe k
+background log: info: exe j
+[success] Total time: 6 s, completed Jun 12, 2015 10:08:34 PM
+>
+```
+
+##With forced failures
+By design the graph execution is aborted when any node fails at executing its task.
+The graph with a specified failure:
+
+```json
+[
+  {"id": "a","precursors": [],"payload": "exe a"},
+  {"id": "b","precursors": ["a"],"payload": "exe b"},
+  {"id": "c","precursors": ["a"],"payload": "exe c","delay":1000},
+  {"id": "d","precursors": ["b","c"],"payload": "exe d"},
+  {"id": "e","precursors": ["d","g"],"payload": "exe e"},
+  {"id": "f","precursors": [],"payload": "exe f"},
+  {"id": "g","precursors": ["f"],"payload": "exe g","delay":50,"fail":true},
+  {"id": "h","precursors": [],"payload": "exe h"},
+  {"id": "i","precursors": ["h"],"payload": "exe i","delay":5000},
+  {"id": "j","precursors": ["i"],"payload": "exe j"},
+  {"id": "k","precursors": ["i"],"payload": "exe k"}
+]
+```
+
+![The interesting dag](dag1fails.dot.png)
+
+```bash
+λ sbt
+> run dag1fails.json
+background log: info: exe h
+background log: info: exe a
+background log: info: exe f
+background log: info: exe b
+background log: info: Fail at List(g)
+background log: info: 	 aborting the graph!
+background log: info: run completed with List(a, f, h, b)
+background log: info: exe i
+background log: info: exe c
+[success] Total time: 1 s, completed Jun 12, 2015 11:17:59 PM
+>
+```
