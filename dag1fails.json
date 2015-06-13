@@ -1,0 +1,13 @@
+[
+  {"id": "a","precursors": [],"payload": "exe a"},
+  {"id": "b","precursors": ["a"],"payload": "exe b"},
+  {"id": "c","precursors": ["a"],"payload": "exe c"},
+  {"id": "d","precursors": ["b","c"],"payload": "exe d"},
+  {"id": "e","precursors": ["d","g"],"payload": "exe e","delay":1000},
+  {"id": "f","precursors": [],"payload": "exe f"},
+  {"id": "g","precursors": ["f"],"payload": "exe g","delay":50,"fail":true},
+  {"id": "h","precursors": [],"payload": "exe h"},
+  {"id": "i","precursors": ["h"],"payload": "exe i","delay":5000},
+  {"id": "j","precursors": ["i"],"payload": "exe j"},
+  {"id": "k","precursors": ["i"],"payload": "exe k"}
+]

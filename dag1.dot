@@ -1,0 +1,19 @@
+digraph Dag {
+   graph [fontsize=16 fontname=SEOptimist labelfontname=SEOptimist labelloc="t" label="" splines=true overlap=false ];
+   node [fontsize=16  fontname=SEOptimist labelfontname=SEOptimist shape=Mrecord penwidth=2.0 style=filled fillcolor=lightgrey];
+   edge [fontsize=12  fontname=SEOptimist labelfontname=SEOptimist penwidth=2.0 ];
+
+   ratio = auto;
+   bgcolor="transparent";
+   a -> b;
+   a -> c;
+   b -> d;
+   c -> d;
+   d -> e;
+   f -> g;
+   g -> e;
+   h -> i;
+   i -> j;
+   i -> k;
+
+ }

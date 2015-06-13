@@ -39,3 +39,48 @@ $ sbt
 :
 ```
 will parse the json input file, construct the corresponding actor graph and execute it. Printing out payload strings.
+
+##A more interesting execution graph
+![The interesting dag](dag1.dot.png)
+
+Here the DAG implementation has to know to kick off nodes a, f and h. The (h,i,j,k) sub-graph is independent.
+The user specifies the relationships like this:
+
+```json
+[
+  {"id": "a","precursors": [],        "payload": "exe a"},
+  {"id": "b","precursors": ["a"],     "payload": "exe b"},
+  {"id": "c","precursors": ["a"],     "payload": "exe c"},
+  {"id": "d","precursors": ["b","c"], "payload": "exe d"},
+  {"id": "e","precursors": ["d","g"], "payload": "exe e"},
+  {"id": "f","precursors": [],        "payload": "exe f"},
+  {"id": "g","precursors": ["f"],     "payload": "exe g"},
+  {"id": "h","precursors": [],        "payload": "exe h"},
+  {"id": "i","precursors": ["h"],     "payload": "exe i"},
+  {"id": "j","precursors": ["i"],     "payload": "exe j"},
+  {"id": "k","precursors": ["i"],     "payload": "exe k"}
+]
+```
+
+The run sequence looks like this (with all tasks taking roughly the same time to execute - a single println statement):
+
+```bash
+λ sbt
+> run dag1.json
+background log: info: exe a
+background log: info: exe h
+background log: info: exe f
+background log: info: exe i
+background log: info: exe g
+background log: info: exe b
+background log: info: exe c
+background log: info: exe d
+background log: info: exe j
+background log: info: exe k
+background log: info: exe e
+background log: info: b reported complete - now total complete List(a, f, h, i, g, b, c, d, j, k, e)
+background log: info: run completed
+[success] Total time: 1 s, completed Jun 12, 2015 1:47:08 PM
+>
+```
+
