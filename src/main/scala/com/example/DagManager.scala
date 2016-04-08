@@ -23,13 +23,23 @@ case class DagManager(input : List[DagSpec], sys : Option[ActorSystem] = None) {
   assert(input.map(_.id).distinct.size == input.size, "Duplicate entries in the task list")
   val system = sys.getOrElse( ActorSystem("dag") )
   implicit val timeout = Timeout(5 seconds)
-  val monitor = system.actorOf(Props[DagStatus],"monitor")
-  println("monitor..")
 
+  system.actorOf(Props(classOf[DagRunner],input),"runner")
+
+//  sys.getOrElse({
+//    system.awaitTermination()
+//  })
+
+}
+
+
+class DagRunner( input : List[DagSpec] ) extends Actor with akka.actor.ActorLogging {
+
+  val monitor = context.system.actorOf(Props(classOf[DagStatus],Vector(self)),"monitor")
   val dagDeps = input.map( node => node.precursors -> node.id )
 
   val dagRealized = input.map( node => {
-    node.id -> system.actorOf(
+    node.id -> context.system.actorOf(
       Props(classOf[DagNode],node.id,node.precursors,node.payload, monitor, node.delay, node.fail),
       node.id + "_executor")
   }).toMap
@@ -61,36 +71,37 @@ case class DagManager(input : List[DagSpec], sys : Option[ActorSystem] = None) {
 
   var completes = List[String]()
 
-  @tailrec
-  final def checkGraph() : List[String] = {
-    val new_completes = Await.result( ask(monitor, DagCompletesQuery).mapTo[List[String]], 5 seconds )
-    val failures = Await.result( ask(monitor, DagFailuresQuery).mapTo[List[String]], 5 seconds )
-    if (failures.nonEmpty){
-      println(s"Fail at $failures \n\t aborting the graph!")
-      dagRealized.foreach{ case (id,node) => node ! PoisonPill }
+  override def receive : Receive = LoggingReceive {
+    case StartedNodes(n) => {
+      println(s"started nodes : ${n}")
     }
-
-    if(new_completes.size > completes.size){
-      println(s"${new_completes.diff(completes).head} reported complete - now total complete $new_completes")
-      completes = new_completes
+    case CompleteNodes(n) => {
+      completes = n
+      println(s"reported complete : ${n}")
+      if (completes.size == input.size) {
+        println(s"Graph completed")
+        monitor ! PoisonPill
+        self ! PoisonPill
+        context.system.terminate()
+      }
     }
-
-    if(completes.size == input.size || failures.nonEmpty) completes
-    else checkGraph()
+    case FailedNodes(n) => {
+      if (n.nonEmpty) {
+        println(s"Fail at $n \n\t aborting the graph!")
+        dagRealized.foreach{ case (id,node) => node ! PoisonPill }
+        monitor ! PoisonPill
+        self ! PoisonPill
+        context.system.terminate()
+      }
+    }
   }
-
-  println("run completed with " + checkGraph())
-  monitor ! PoisonPill
-
-  system.shutdown()
-
-  sys.getOrElse({
-    system.awaitTermination()
-  })
-
 }
 
 //messages
+case class Subscribe( ref : ActorRef )
+case class CompleteNodes( nodes : List[String] )
+case class StartedNodes( nodes : List[String] )
+case class FailedNodes( nodes : List[String] )
 case class ConfigDeps( deps : List[ActorRef] )
 case class Kick(from: String)
 case class Cancel()
@@ -158,23 +169,30 @@ class DagNode(id:String, pre : List[String] ,payload : String, monitor : ActorRe
 
 }
 
-class DagStatus extends Actor with akka.actor.ActorLogging {
+class DagStatus( subscribers : Vector[ActorRef] ) extends Actor with akka.actor.ActorLogging {
 
   var completes = Vector[String]()
   var failures = Vector[String]()
   var working = Vector[ActorRef]()
+  var clients = subscribers
 
   override def receive : Receive = LoggingReceive {
+    case Subscribe( ref : ActorRef ) => {
+      clients = clients :+ ref
+    }
     case ReportDone(id, ref) => {
       completes = completes :+ id
       working = working.filterNot(_ == ref)
+      clients.foreach( c => c ! CompleteNodes( completes.toList ) )
     }
     case ReportError(id, ref, cause) => {
       failures = failures :+ id
       working = working.filterNot(_ == ref)
+      clients.foreach( c => c ! FailedNodes( failures.toList ) )
     }
     case ReportStart(id, ref) => {
       working = working :+ ref
+      clients.foreach( c => c ! StartedNodes( working.map(_.path.name).toList ) )
     }
     case DagCompletesQuery => {
       sender ! completes.toList

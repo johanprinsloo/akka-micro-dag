@@ -2,9 +2,9 @@ Akka Micro Dag Prototype
 =========================
 
 Define and run the simplest possible Akka executor directed acyclic graph
- 
+
  As input the DAG takes a graph adjacency list and a payload for each executor:
- 
+
  Node ID  | List of Precursors | Payload command
 ------------- | ------------- | ------------
 a  | (none - we start here)  | println(a)
@@ -163,3 +163,4 @@ background log: info: exe c
 [success] Total time: 1 s, completed Jun 12, 2015 11:17:59 PM
 >
 ```
+ 
