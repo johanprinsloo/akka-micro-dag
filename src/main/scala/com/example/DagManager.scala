@@ -3,13 +3,7 @@ package com.example
 import akka.actor.Status.Success
 import akka.actor._
 import akka.actor.ActorSystem
-import akka.actor.Actor.Receive
 import akka.util.Timeout
-import scala.annotation.tailrec
-import scala.concurrent.Future
-import scala.concurrent.Await
-import akka.pattern.ask
-import akka.pattern.pipe
 import scala.concurrent.duration._
 import akka.event.LoggingReceive
 
@@ -25,13 +19,7 @@ case class DagManager(input : List[DagSpec], sys : Option[ActorSystem] = None) {
   implicit val timeout = Timeout(5 seconds)
 
   system.actorOf(Props(classOf[DagRunner],input),"runner")
-
-//  sys.getOrElse({
-//    system.awaitTermination()
-//  })
-
 }
-
 
 class DagRunner( input : List[DagSpec] ) extends Actor with akka.actor.ActorLogging {
 
@@ -98,7 +86,6 @@ class DagRunner( input : List[DagSpec] ) extends Actor with akka.actor.ActorLogg
 }
 
 //messages
-case class Subscribe( ref : ActorRef )
 case class CompleteNodes( nodes : List[String] )
 case class StartedNodes( nodes : List[String] )
 case class FailedNodes( nodes : List[String] )
@@ -108,8 +95,6 @@ case class Cancel()
 case class ReportStart(id : String, dag : ActorRef)
 case class ReportDone(id : String, dag : ActorRef)
 case class ReportError(id : String, dag : ActorRef, cause : Throwable)
-case class DagCompletesQuery()
-case class DagFailuresQuery()
 
 //actors
 class DagNode(id:String, pre : List[String] ,payload : String, monitor : ActorRef, delay : Long, fail : Boolean)
@@ -177,9 +162,6 @@ class DagStatus( subscribers : Vector[ActorRef] ) extends Actor with akka.actor.
   var clients = subscribers
 
   override def receive : Receive = LoggingReceive {
-    case Subscribe( ref : ActorRef ) => {
-      clients = clients :+ ref
-    }
     case ReportDone(id, ref) => {
       completes = completes :+ id
       working = working.filterNot(_ == ref)
@@ -193,12 +175,6 @@ class DagStatus( subscribers : Vector[ActorRef] ) extends Actor with akka.actor.
     case ReportStart(id, ref) => {
       working = working :+ ref
       clients.foreach( c => c ! StartedNodes( working.map(_.path.name).toList ) )
-    }
-    case DagCompletesQuery => {
-      sender ! completes.toList
-    }
-    case DagFailuresQuery => {
-      sender ! failures.toList
     }
   }
 }
